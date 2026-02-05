@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional UAE Invoice Management System Design System */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 253 25% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 253 25% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 253 25% 18%;
+
+    /* Primary Bright Green (#00DF81) */
+    --primary: 156 100% 44%; /* #00DF81 */
+    --primary-foreground: 0 0% 98%; /* white for readability */
+    --primary-hover: 156 100% 40%; /* slightly darker shade */
+
+    --secondary: 260 40% 96%;
+    --secondary-foreground: 253 25% 18%;
+
+    --muted: 260 40% 96%;
+    --muted-foreground: 253 20% 45%;
+
+    --accent: 260 40% 96%;
+    --accent-foreground: 253 25% 18%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 260 30% 88%;
+    --input: 260 30% 88%;
+    --ring: 156 100% 44%;
+
+    --radius: 0.75rem;
+
+    /* Gradients updated for new primary */
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(156 100% 44%),
+      hsl(156 100% 40%)
+    );
+    --gradient-header: linear-gradient(
+      135deg,
+      hsl(156 100% 44%),
+      hsl(156 100% 40%)
+    );
+
+    --gradient-success: linear-gradient(
+      135deg,
+      hsl(142 76% 36%),
+      hsl(160 100% 30%)
+    );
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(260 40% 98%));
+    --gradient-header: linear-gradient(
+      135deg,
+      hsl(156 100% 44%),
+      hsl(156 100% 38%)
+    );
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(253 25% 18% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(253 25% 18% / 0.1),
+      0 2px 4px -1px hsl(253 25% 18% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(253 25% 18% / 0.1),
+      0 4px 6px -2px hsl(253 25% 18% / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(253 25% 18% / 0.1),
+      0 10px 10px -5px hsl(253 25% 18% / 0.04);
+
+    --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 253 25% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 253 25% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 253 25% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 156 100% 46%; /* slightly lighter for dark mode */
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 156 100% 50%;
+
+    --secondary: 253 25% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 253 25% 25%;
+    --muted-foreground: 253 20% 70%;
+
+    --accent: 253 25% 25%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 253 25% 25%;
+    --input: 253 25% 25%;
+    --ring: 156 100% 44%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: "Instrument Sans", system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-primary text-[hsl(var(--primary-foreground))] hover:opacity-90 transition-opacity;
+  }
+
+  .card-professional {
+    @apply bg-gradient-card shadow-md border-0;
+  }
+
+  /* Global font configuration */
+  * {
+    font-family: "Instrument Sans", system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
+  }
+
+  body {
+    font-family: "Instrument Sans", system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition: var(--transition-base);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
