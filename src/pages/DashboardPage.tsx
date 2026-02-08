@@ -49,7 +49,7 @@ export default function DashboardPage() {
   return (
     <div className="p-6 space-y-6">
       {/* ===== Hero Section ===== */}
-      <DashboardHero company={{ name: "Fatorah" }} />
+      <DashboardHero company={{ name: "Yasar Invoice" }} />
 
       {/* ===== KPI Section ===== */}
       <KPISection

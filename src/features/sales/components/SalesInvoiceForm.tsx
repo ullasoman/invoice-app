@@ -38,13 +38,27 @@ const UAE_VAT_RATE = 5;
 const invoiceLineSchema = z.object({
   category_id: z.string().min(1, "Category is required"),
   item_id: z.string().min(1, "Item is required"),
-  quantity: z.number().min(1, "Quantity must be greater than 0"),
-  unit: z.string().optional(),
-  unit_price: z.number().min(0),
-  tax_percentage: z.number().min(0),
-  sub_total: z.number().default(0),
-  tax_amount: z.number().default(0),
-  total_amount: z.number().default(0),
+
+  quantity: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1, "Quantity must be greater than 0"),
+  ),
+
+  unit: z.string().min(1, "Unit is required"),
+
+  unit_price: z.preprocess(
+    (val) => Number(val),
+    z.number().min(0, "Unit price must be 0 or greater"),
+  ),
+
+  tax_percentage: z.preprocess(
+    (val) => Number(val),
+    z.number().min(0, "VAT must be 0 or greater"),
+  ),
+
+  sub_total: z.number(),
+  tax_amount: z.number(),
+  total_amount: z.number(),
 });
 
 const salesInvoiceSchema = z.object({
@@ -61,7 +75,7 @@ type SalesInvoiceFormData = z.infer<typeof salesInvoiceSchema>;
 const calculateLineValues = (
   quantity: number,
   unitPrice: number,
-  taxPercent: number
+  taxPercent: number,
 ) => {
   const sub_total = quantity * unitPrice;
   const tax_amount = (sub_total * taxPercent) / 100;
@@ -88,7 +102,7 @@ export default function SalesInvoiceForm({
   const [units, setUnits] = useState<Unit[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [categoryItems, setCategoryItems] = useState<Record<string, Item[]>>(
-    {}
+    {},
   );
   const [loading, setLoading] = useState(false);
 
@@ -115,7 +129,16 @@ export default function SalesInvoiceForm({
     },
   });
 
-  const { control, handleSubmit, setValue, getValues, watch, reset } = form;
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    reset,
+    formState: { errors, isSubmitted },
+  } = form;
+
   const { fields, append, remove } = useFieldArray({ control, name: "lines" });
 
   // ------------------ Fetch Data ------------------
@@ -205,7 +228,7 @@ export default function SalesInvoiceForm({
 
       // Extract the line index from the field name (e.g., "lines.0.quantity" -> 0)
       const match = name.match(
-        /^lines\.(\d+)\.(quantity|unit_price|tax_percentage)$/
+        /^lines\.(\d+)\.(quantity|unit_price|tax_percentage)$/,
       );
       if (!match) return;
 
@@ -215,7 +238,7 @@ export default function SalesInvoiceForm({
       const calc = calculateLineValues(
         Number(line.quantity) || 0,
         Number(line.unit_price) || 0,
-        Number(line.tax_percentage) || 0
+        Number(line.tax_percentage) || 0,
       );
 
       // Only update if values have changed to prevent infinite loops
@@ -241,6 +264,14 @@ export default function SalesInvoiceForm({
 
     return () => subscription.unsubscribe();
   }, [watch, setValue, getValues]);
+
+  useEffect(() => {
+    if (!isSubmitted) return;
+
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fix the highlighted errors before saving.");
+    }
+  }, [errors, isSubmitted]);
 
   // ------------------ Derived Totals ------------------
   const lines = watch("lines");
@@ -272,7 +303,7 @@ export default function SalesInvoiceForm({
   const selectItem = async (index: number, itemId: string) => {
     const categoryId = lines[index].category_id;
     const item = categoryItems[categoryId]?.find(
-      (i) => String(i.id) === itemId
+      (i) => String(i.id) === itemId,
     );
 
     if (item) {
@@ -288,7 +319,7 @@ export default function SalesInvoiceForm({
     const categoryId = getValues(`lines.${index}.category_id`);
     const itemId = getValues(`lines.${index}.item_id`);
     const item = categoryItems[categoryId]?.find(
-      (i) => String(i.id) === itemId
+      (i) => String(i.id) === itemId,
     );
 
     if (!item) {
@@ -300,7 +331,7 @@ export default function SalesInvoiceForm({
       toast.error(
         `Only ${item.quantity} ${item.unit ?? ""} of ${
           item.name
-        } available in stock.`
+        } available in stock.`,
       );
       return; // prevent setting invalid quantity
     }
@@ -313,7 +344,7 @@ export default function SalesInvoiceForm({
     const categoryId = getValues(`lines.${index}.category_id`);
     const itemId = getValues(`lines.${index}.item_id`);
     const item = categoryItems[categoryId]?.find(
-      (i) => String(i.id) === itemId
+      (i) => String(i.id) === itemId,
     );
 
     if (!item) {
@@ -323,7 +354,7 @@ export default function SalesInvoiceForm({
 
     if (value < item.selling_price) {
       toast.error(
-        `Price for ${item.name} cannot be less than AED ${item.selling_price}.`
+        `Price for ${item.name} cannot be less than AED ${item.selling_price}.`,
       );
       return; // prevent setting invalid price
     }
@@ -358,9 +389,16 @@ export default function SalesInvoiceForm({
                   <CommandSelect
                     options={buyerOptions}
                     value={watch("buyer_id")}
-                    onChange={(val) => setValue("buyer_id", val)}
+                    onChange={(val) =>
+                      setValue("buyer_id", val, { shouldValidate: true })
+                    }
                     placeholder="Select customer..."
                   />
+                  {errors.buyer_id && (
+                    <p className="text-sm text-red-500">
+                      {errors.buyer_id.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Issue Date</Label>
@@ -369,7 +407,7 @@ export default function SalesInvoiceForm({
                     onChange={(date) =>
                       setValue(
                         "issue_date",
-                        date?.toISOString().split("T")[0] || ""
+                        date?.toISOString().split("T")[0] || "",
                       )
                     }
                   />
@@ -381,7 +419,7 @@ export default function SalesInvoiceForm({
                     onChange={(date) =>
                       setValue(
                         "due_date",
-                        date?.toISOString().split("T")[0] || ""
+                        date?.toISOString().split("T")[0] || "",
                       )
                     }
                   />
@@ -450,7 +488,7 @@ export default function SalesInvoiceForm({
                             onChange={(categoryId) => {
                               setValue(
                                 `lines.${index}.category_id`,
-                                categoryId
+                                categoryId,
                               );
                               setValue(`lines.${index}.item_id`, "");
                               fetchItemsByCategory(categoryId);
@@ -459,68 +497,117 @@ export default function SalesInvoiceForm({
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Select Item</Label>
+                          <Label>Select Item *</Label>
+
                           <CommandSelect
                             options={itemOptions}
                             value={watch(`lines.${index}.item_id`) || ""}
                             onChange={(v) => {
-                              setValue(`lines.${index}.item_id`, v);
+                              setValue(`lines.${index}.item_id`, v, {
+                                shouldValidate: true,
+                              });
+
                               selectItem(index, v);
                             }}
                             placeholder="Select item..."
                           />
+
+                          {errors.lines?.[index]?.item_id && (
+                            <p className="text-sm text-red-500">
+                              {errors.lines[index]?.item_id?.message}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
                           <Label>Quantity *</Label>
                           <Input
                             type="number"
+                            min={0}
                             value={watch(`lines.${index}.quantity`)}
                             onChange={(e) =>
                               handleQuantityChange(
                                 index,
-                                Number(e.target.value) || 0
+                                Number(e.target.value) || 0,
                               )
                             }
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Unit</Label>
+                          <Label>Unit *</Label>
+
                           <CommandSelect
                             options={unitOptions}
                             value={watch(`lines.${index}.unit`) || ""}
-                            onChange={(v) => setValue(`lines.${index}.unit`, v)}
+                            onChange={(v) =>
+                              setValue(`lines.${index}.unit`, v, {
+                                shouldValidate: true,
+                              })
+                            }
                             placeholder="Select unit..."
                           />
+
+                          {errors.lines?.[index]?.unit && (
+                            <p className="text-sm text-red-500">
+                              {errors.lines[index]?.unit?.message}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Unit Price</Label>
+                          <Label>Unit Price *</Label>
+
                           <Input
                             type="number"
+                            min={0}
                             value={watch(`lines.${index}.unit_price`)}
                             onChange={(e) =>
                               handlePriceChange(
                                 index,
-                                Number(e.target.value) || 0
+                                Number(e.target.value) || 0,
                               )
                             }
+                            className={
+                              errors.lines?.[index]?.unit_price
+                                ? "border-red-500 focus:ring-red-500"
+                                : ""
+                            }
                           />
+
+                          {errors.lines?.[index]?.unit_price && (
+                            <p className="text-sm text-red-500">
+                              {errors.lines[index]?.unit_price?.message}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
-                          <Label>VAT %</Label>
+                          <Label>VAT % *</Label>
+
                           <Input
                             type="number"
+                            min={0}
                             value={watch(`lines.${index}.tax_percentage`)}
                             onChange={(e) =>
                               setValue(
                                 `lines.${index}.tax_percentage`,
-                                Number(e.target.value) || 0
+                                Number(e.target.value) || 0,
+                                { shouldValidate: true },
                               )
                             }
+                            className={
+                              errors.lines?.[index]?.tax_percentage
+                                ? "border-red-500 focus:ring-red-500"
+                                : ""
+                            }
                           />
+
+                          {errors.lines?.[index]?.tax_percentage && (
+                            <p className="text-sm text-red-500">
+                              {errors.lines[index]?.tax_percentage?.message}
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -534,7 +621,7 @@ export default function SalesInvoiceForm({
                             <p className="font-bold text-slate-900 dark:text-slate-100">
                               AED{" "}
                               {(watch(`lines.${index}.sub_total`) || 0).toFixed(
-                                2
+                                2,
                               )}
                             </p>
                           </div>

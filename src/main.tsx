@@ -65,7 +65,7 @@ function SmartPWA() {
       <div className="bg-[#1C1C1C] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-4 border border-gray-700">
         {showInstall && (
           <>
-            <p className="text-sm">📱 Install Fatorah on your device?</p>
+            <p className="text-sm">📱 Install Yasar Invoice on your device?</p>
             <button
               onClick={handleInstall}
               className="bg-[#F5E115] text-black font-semibold px-4 py-1.5 rounded-md hover:bg-[#E0D212] transition"
@@ -77,7 +77,7 @@ function SmartPWA() {
 
         {showUpdate && (
           <>
-            <p className="text-sm">🚀 A new version of Fatorah is available.</p>
+            <p className="text-sm">🚀 A new version of Yasar Invoice is available.</p>
             <button
               onClick={handleReload}
               className="bg-[#F5E115] text-black font-semibold px-4 py-1.5 rounded-md hover:bg-[#E0D212] transition"

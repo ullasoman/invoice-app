@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
       manifest: {
-        name: "Fatorah Dashboard",
-        short_name: "Fatorah",
+        name: "Yasar Invoice Dashboard",
+        short_name: "Yasar Invoice",
         description: "UAE Invoice Management Dashboard",
         theme_color: "#034646",
         background_color: "#ffffff",

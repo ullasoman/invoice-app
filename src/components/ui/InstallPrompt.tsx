@@ -38,7 +38,7 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1C1C1C] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-4 z-50">
-      <p className="text-sm">📱 Install Fatorah on your device?</p>
+      <p className="text-sm">📱 Install Yasar Invoice on your device?</p>
       <button
         onClick={handleInstall}
         className="bg-[#F5E115] text-black font-semibold px-4 py-1.5 rounded-md hover:bg-[#E0D212] transition"

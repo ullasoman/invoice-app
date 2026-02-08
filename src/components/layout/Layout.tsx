@@ -89,9 +89,9 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-800">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-hover rounded-lg flex items-center justify-center">
-                <img src="/images/icon-white.png" alt="fatorah logo" />
+                <img src="/images/icon-white.png" alt="Yasar Invoice logo" />
               </div>
-              <h1 className="text-xl font-bold text-white">Fatorah</h1>
+              <h1 className="text-xl font-bold text-white">Yasar Invoice</h1>
             </div>
             <Button
               variant="ghost"
