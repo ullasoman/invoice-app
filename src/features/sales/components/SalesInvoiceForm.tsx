@@ -561,6 +561,7 @@ export default function SalesInvoiceForm({
                           <Input
                             type="number"
                             min={0}
+                            step="0.01"
                             value={watch(`lines.${index}.unit_price`)}
                             onChange={(e) =>
                               handlePriceChange(
